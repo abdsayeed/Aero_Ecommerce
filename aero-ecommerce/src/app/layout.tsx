@@ -1,20 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { jost } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const jost: NextFont = jost(options:{
+  variable: '--font-jost',
+  subsets: ['latin'],
+})
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Aero Store",
-  description: "Premium Nike footwear — engineered for performance, built for the streets.",
+  description: "Premium Aero footwear — engineered for performance, built for the streets.",
 };
 
 export default function RootLayout({
@@ -25,7 +21,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${jost.classname} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

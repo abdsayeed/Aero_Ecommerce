@@ -15,11 +15,6 @@ async function getProducts(): Promise<Product[]> {
   }
 }
 
-const isDbConfigured =
-  !!process.env.DATABASE_URL &&
-  !process.env.DATABASE_URL.startsWith("your-neon");
-
-
 export default async function HomePage() {
   const allProducts = await getProducts();
 
@@ -29,7 +24,6 @@ export default async function HomePage() {
       <header className="sticky top-0 z-50 bg-black/60 backdrop-blur-md border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {/* Nike Swoosh SVG */}
             <svg
               className="w-12 h-8 text-white fill-current"
               viewBox="0 0 100 42"
@@ -67,14 +61,17 @@ export default async function HomePage() {
               <code className="bg-white/10 px-2 py-1 rounded text-white">
                 DATABASE_URL
               </code>{" "}
-              in <code className="bg-white/10 px-2 py-1 rounded text-white">.env.local</code>{" "}
+              in{" "}
+              <code className="bg-white/10 px-2 py-1 rounded text-white">
+                .env.local
+              </code>{" "}
               and run{" "}
               <code className="bg-white/10 px-2 py-1 rounded text-white">
                 npx drizzle-kit push
               </code>{" "}
               then{" "}
               <code className="bg-white/10 px-2 py-1 rounded text-white">
-                npx tsx src/db/seed.ts
+                npm run db:seed
               </code>
               .
             </p>
