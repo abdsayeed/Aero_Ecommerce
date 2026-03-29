@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { jost } from "next/font/google";
+import { Jost } from "next/font/google";
 import "./globals.css";
 
-const jost: NextFont = jost(options:{
-  variable: '--font-jost',
-  subsets: ['latin'],
-})
-
+const jost = Jost({
+  variable: "--font-jost-var",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Aero Store",
@@ -19,10 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${jost.classname} h-full antialiased`}
-    >
+    <html lang="en" className={`${jost.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

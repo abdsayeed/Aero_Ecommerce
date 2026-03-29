@@ -1,8 +1,49 @@
-import ProductCard from "@/components/ProductCard";
-import CartButton from "@/components/CartButton";
+import Navbar from "@/components/Navbar";
+import Card from "@/components/Card";
+import Footer from "@/components/Footer";
 import { Product } from "@/db/schema";
+import Image from "next/image";
 
 export const dynamic = "force-dynamic";
+
+const latestShoes: Product[] = [
+  {
+    id: 101,
+    name: "Nike Air Force 1 '07",
+    brand: "Nike",
+    price: "110.00",
+    image: "/shoes/shoe-1.jpg",
+    category: "Lifestyle",
+    description: "The radiance lives on in the Nike Air Force 1 '07, a low-cut classic with durable leather and cushioned Air.",
+  },
+  {
+    id: 102,
+    name: "Air Jordan 1 Retro High OG",
+    brand: "Nike",
+    price: "180.00",
+    image: "/shoes/shoe-2.webp",
+    category: "Basketball",
+    description: "The shoe that started it all. The Air Jordan 1 Retro High OG is a timeless icon with premium leather construction.",
+  },
+  {
+    id: 103,
+    name: "Nike Dunk Low Retro",
+    brand: "Nike",
+    price: "110.00",
+    image: "/shoes/shoe-3.webp",
+    category: "Lifestyle",
+    description: "Created for the hardwood but taken to the streets, the Nike Dunk Low Retro returns with classic details.",
+  },
+  {
+    id: 104,
+    name: "Nike Air Max 270",
+    brand: "Nike",
+    price: "150.00",
+    image: "/shoes/shoe-4.webp",
+    category: "Sneakers",
+    description: "The Nike Air Max 270 delivers unrivaled comfort with its large Air unit and breathable mesh upper.",
+  },
+];
 
 async function getProducts(): Promise<Product[]> {
   try {
@@ -16,84 +57,86 @@ async function getProducts(): Promise<Product[]> {
 }
 
 export default async function HomePage() {
-  const allProducts = await getProducts();
+  const dbProducts = await getProducts();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-black/60 backdrop-blur-md border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <svg
-              className="w-12 h-8 text-white fill-current"
-              viewBox="0 0 100 42"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M9.333 41.895L99.333 9.562c1.333-.5 1.667-1.5.667-2.167-1-.666-3-.5-4.333 0L9.667 35.895l-4-6.666c-.667-1.167-2.333-1.5-3.333-.5s-1 2.833-.333 4l3.333 9.166z" />
-            </svg>
-            <span className="text-white font-black text-xl tracking-tight">
-              Aero Store
-            </span>
-          </div>
-          <CartButton />
-        </div>
-      </header>
+    <div className="min-h-screen flex flex-col bg-[var(--color-light-200)]">
+      <Navbar />
 
       {/* Hero */}
-      <section className="max-w-7xl mx-auto px-6 pt-16 pb-12 text-center">
-        <span className="inline-block bg-white/10 text-white/70 text-xs font-semibold tracking-widest uppercase px-4 py-2 rounded-full mb-4">
-          New Season Collection
-        </span>
-        <h1 className="text-5xl md:text-7xl font-black text-white leading-none tracking-tight mb-4">
-          Just Do It
-        </h1>
-        <p className="text-gray-400 text-lg max-w-xl mx-auto">
-          Explore the latest Nike drops — engineered for performance, built for the streets.
-        </p>
+      <section className="relative bg-[var(--color-dark-900)] overflow-hidden min-h-[560px] flex items-center">
+        <div className="absolute inset-0">
+          <Image
+            src="/hero-bg.png"
+            alt=""
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full grid md:grid-cols-2 gap-8 items-center py-16">
+          <div>
+            <span className="inline-block text-xs font-semibold tracking-widest uppercase text-[var(--color-dark-500)] mb-4">
+              New Season Collection
+            </span>
+            <h1 className="text-5xl md:text-7xl font-bold text-[var(--color-light-100)] leading-tight mb-6">
+              Just Do It
+            </h1>
+            <p className="text-lg text-[var(--color-dark-500)] mb-8 max-w-md leading-relaxed">
+              Explore the latest drops — engineered for performance, built for the streets.
+            </p>
+            <a
+              href="#latest"
+              className="inline-block bg-[var(--color-light-100)] text-[var(--color-dark-900)] font-semibold px-8 py-3 rounded hover:bg-[var(--color-light-300)] transition-colors"
+            >
+              Shop Now
+            </a>
+          </div>
+
+          <div className="relative h-72 md:h-96">
+            <Image
+              src="/hero-shoe.png"
+              alt="Featured shoe"
+              fill
+              className="object-contain drop-shadow-2xl"
+              priority
+            />
+          </div>
+        </div>
       </section>
 
-      {/* Product Grid */}
-      <main className="max-w-7xl mx-auto px-6 pb-24">
-        {allProducts.length === 0 ? (
-          <div className="text-center py-24">
-            <p className="text-gray-400 text-lg">
-              No products found. Fill in your{" "}
-              <code className="bg-white/10 px-2 py-1 rounded text-white">
-                DATABASE_URL
-              </code>{" "}
-              in{" "}
-              <code className="bg-white/10 px-2 py-1 rounded text-white">
-                .env.local
-              </code>{" "}
-              and run{" "}
-              <code className="bg-white/10 px-2 py-1 rounded text-white">
-                npx drizzle-kit push
-              </code>{" "}
-              then{" "}
-              <code className="bg-white/10 px-2 py-1 rounded text-white">
-                npm run db:seed
-              </code>
-              .
-            </p>
-          </div>
-        ) : (
-          <>
-            <p className="text-gray-500 text-sm font-medium mb-6">
-              {allProducts.length} products
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {allProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          </>
-        )}
-      </main>
+      {/* Latest Shoes — static placeholder */}
+      <section id="latest" className="max-w-7xl w-full mx-auto px-6 py-16">
+        <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-dark-900)] mb-10">
+          Latest Shoes
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {latestShoes.map((shoe, i) => (
+            <Card
+              key={shoe.id}
+              product={shoe}
+              badge={i === 0 ? "Best Seller" : undefined}
+            />
+          ))}
+        </div>
+      </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/10 py-8 text-center text-gray-600 text-sm">
-        © {new Date().getFullYear()} Aero Store · Powered by Next.js, Drizzle & Neon
-      </footer>
+      {/* All Products — from DB */}
+      {dbProducts.length > 0 && (
+        <section className="max-w-7xl w-full mx-auto px-6 pb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-[var(--color-dark-900)] mb-10">
+            All Products
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {dbProducts.map((product) => (
+              <Card key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <Footer />
     </div>
   );
 }

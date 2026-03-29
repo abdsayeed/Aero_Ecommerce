@@ -18,7 +18,7 @@
   --color-orange: #d37918;
 
   /* Font family */
-  --font-jost: "Jost", sans-serif;
+  --font-jost: var(--font-jost-var), "Jost", sans-serif;
 
   /* Heading sizes */
   --text-heading-1: 72px;
@@ -56,4 +56,8 @@
   --text-footnote: 12px;
   --text-footnote--line-height: 18px;
   --text-footnote--font-weight: 400;
+}
+
+body {
+  font-family: var(--font-jost-var), "Jost", sans-serif;
 }
