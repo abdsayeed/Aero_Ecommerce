@@ -1,12 +1,21 @@
 import Navbar from "@/components/Navbar";
 import Card from "@/components/Card";
 import Footer from "@/components/Footer";
-import { Product } from "@/db/schema";
 import Image from "next/image";
 
 export const dynamic = "force-dynamic";
 
-const latestShoes: Product[] = [
+type StaticProduct = {
+  id: number;
+  name: string;
+  brand: string;
+  price: string;
+  image: string;
+  category: string;
+  description: string;
+};
+
+const latestShoes: StaticProduct[] = [
   {
     id: 101,
     name: "Nike Air Force 1 '07",
@@ -45,12 +54,21 @@ const latestShoes: Product[] = [
   },
 ];
 
-async function getProducts(): Promise<Product[]> {
+async function getProducts(): Promise<StaticProduct[]> {
   try {
-    const { db } = await import("@/db");
-    const { products } = await import("@/db/schema");
+    const { db } = await import("@/lib/db");
+    const { products } = await import("@/lib/db/schema");
     if (!db) return [];
-    return await db.select().from(products);
+    const rows = await db.select().from(products);
+    return rows.map((p) => ({
+      id: 0,
+      name: p.name,
+      brand: "",
+      price: "0.00",
+      image: "",
+      category: "",
+      description: p.description,
+    }));
   } catch {
     return [];
   }
