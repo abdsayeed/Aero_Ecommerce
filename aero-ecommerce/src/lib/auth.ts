@@ -11,8 +11,20 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: false,
   },
+  // Google OAuth — requires GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET env vars
+  // Redirect URI for local dev: http://localhost:3000/api/auth/callback/google
+  // Add this URI in Google Cloud Console → APIs & Services → Credentials
+  socialProviders: {
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? {
+          google: {
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          },
+        }
+      : {}),
+  },
   session: {
-    cookieName: "auth_session",
     expiresIn: 60 * 60 * 24 * 7,
     cookieCache: {
       enabled: true,

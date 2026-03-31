@@ -1,4 +1,4 @@
-import { pgTable, uuid, integer, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, integer, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -16,7 +16,10 @@ export const reviews = pgTable("reviews", {
   rating: integer("rating").notNull(),
   comment: text("comment"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (t) => [
+  // One review per user per product (Task 6)
+  uniqueIndex("reviews_product_user_unique").on(t.productId, t.userId),
+]);
 
 export const reviewsRelations = relations(reviews, ({ one }) => ({
   product: one(products, {

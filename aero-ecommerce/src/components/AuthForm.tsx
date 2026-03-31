@@ -5,31 +5,43 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import SocialProviders from "./SocialProviders";
-import { signIn, signUp } from "@/lib/auth/actions";
+import { signIn, signUp, signInAndRedirect, signUpAndRedirect } from "@/lib/auth/actions";
 
 interface AuthFormProps {
   mode: "sign-in" | "sign-up";
+  redirectTo?: string;
 }
 
-export default function AuthForm({ mode }: AuthFormProps) {
+export default function AuthForm({ mode, redirectTo }: AuthFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const isSignUp = mode === "sign-up";
   const router = useRouter();
 
+  // Safe redirect — only allow relative paths to prevent open redirect
+  const safeRedirect = redirectTo?.startsWith("/") ? redirectTo : "/";
+
   async function handleSubmit(formData: FormData) {
     setError(null);
     startTransition(async () => {
-      const result = isSignUp ? await signUp(formData) : await signIn(formData);
+      // Use server-side redirect variants — cookies + redirect in one response
+      // guarantees the session cookie is present before the next page renders.
+      const result = isSignUp
+        ? await signUpAndRedirect(formData, safeRedirect)
+        : await signInAndRedirect(formData, safeRedirect);
+
+      // If we get here, the action returned an error (redirect throws, so it
+      // never returns on success)
       if (result?.error) {
         setError(result.error);
-      } else if (result?.success) {
-        router.push("/");
-        router.refresh();
       }
     });
   }
+
+  const switchHref = isSignUp
+    ? `/sign-in${redirectTo ? `?redirect=${encodeURIComponent(redirectTo)}` : ""}`
+    : `/sign-up${redirectTo ? `?redirect=${encodeURIComponent(redirectTo)}` : ""}`;
 
   return (
     <div className="w-full flex flex-col">
@@ -39,14 +51,14 @@ export default function AuthForm({ mode }: AuthFormProps) {
         {isSignUp ? (
           <>
             Already have an account?{" "}
-            <Link href="/sign-in" className="text-[#111] font-semibold underline underline-offset-2">
+            <Link href={switchHref} className="text-[#111] font-semibold underline underline-offset-2">
               Sign In
             </Link>
           </>
         ) : (
           <>
             Don&apos;t have an account?{" "}
-            <Link href="/sign-up" className="text-[#111] font-semibold underline underline-offset-2">
+            <Link href={switchHref} className="text-[#111] font-semibold underline underline-offset-2">
               Sign Up
             </Link>
           </>

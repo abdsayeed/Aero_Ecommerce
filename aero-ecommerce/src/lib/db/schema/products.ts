@@ -8,6 +8,7 @@ import {
   integer,
   jsonb,
   real,
+  index,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
@@ -16,55 +17,70 @@ import { genders } from "./filters/genders";
 import { brands } from "./brands";
 import { colors } from "./filters/colors";
 import { sizes } from "./filters/sizes";
-import { user } from "./user";
 
 // ─── Products ────────────────────────────────────────────────────────────────
 
-export const products = pgTable("products", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  categoryId: uuid("category_id")
-    .notNull()
-    .references(() => categories.id),
-  genderId: uuid("gender_id")
-    .notNull()
-    .references(() => genders.id),
-  brandId: uuid("brand_id")
-    .notNull()
-    .references(() => brands.id),
-  isPublished: boolean("is_published").notNull().default(false),
-  // nullable self-ref to variants — FK added via raw SQL in migration to avoid circular dep
-  defaultVariantId: uuid("default_variant_id"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+export const products = pgTable(
+  "products",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    description: text("description").notNull(),
+    categoryId: uuid("category_id")
+      .notNull()
+      .references(() => categories.id),
+    genderId: uuid("gender_id")
+      .notNull()
+      .references(() => genders.id),
+    brandId: uuid("brand_id")
+      .notNull()
+      .references(() => brands.id),
+    isPublished: boolean("is_published").notNull().default(false),
+    defaultVariantId: uuid("default_variant_id"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("idx_products_brand_published").on(t.brandId, t.isPublished),
+    index("idx_products_category_published").on(t.categoryId, t.isPublished),
+    index("idx_products_gender_published").on(t.genderId, t.isPublished),
+    index("idx_products_created_at").on(t.createdAt),
+  ]
+);
 
 // ─── Product Variants ─────────────────────────────────────────────────────────
 
-export const productVariants = pgTable("product_variants", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  productId: uuid("product_id")
-    .notNull()
-    .references(() => products.id, { onDelete: "cascade" }),
-  sku: text("sku").notNull().unique(),
-  price: numeric("price", { precision: 10, scale: 2 }).notNull(),
-  salePrice: numeric("sale_price", { precision: 10, scale: 2 }),
-  colorId: uuid("color_id")
-    .notNull()
-    .references(() => colors.id),
-  sizeId: uuid("size_id")
-    .notNull()
-    .references(() => sizes.id),
-  inStock: integer("in_stock").notNull().default(0),
-  weight: real("weight"),
-  dimensions: jsonb("dimensions").$type<{
-    length: number;
-    width: number;
-    height: number;
-  }>(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+export const productVariants = pgTable(
+  "product_variants",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    sku: text("sku").notNull().unique(),
+    price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+    salePrice: numeric("sale_price", { precision: 10, scale: 2 }),
+    colorId: uuid("color_id")
+      .notNull()
+      .references(() => colors.id),
+    sizeId: uuid("size_id")
+      .notNull()
+      .references(() => sizes.id),
+    inStock: integer("in_stock").notNull().default(0),
+    weight: real("weight"),
+    dimensions: jsonb("dimensions").$type<{
+      length: number;
+      width: number;
+      height: number;
+    }>(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("idx_variants_color_product").on(t.colorId, t.productId),
+    index("idx_variants_product").on(t.productId),
+    index("idx_variants_size").on(t.sizeId),
+  ]
+);
 
 // ─── Product Images ───────────────────────────────────────────────────────────
 

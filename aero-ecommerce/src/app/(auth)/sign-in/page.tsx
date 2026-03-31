@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   description: "Sign in to your Aero Store account.",
 };
 
-export default function SignInPage() {
-  return <AuthForm mode="sign-in" />;
+type Props = { searchParams: Promise<{ redirect?: string }> };
+
+export default async function SignInPage({ searchParams }: Props) {
+  const { redirect } = await searchParams;
+  return <AuthForm mode="sign-in" redirectTo={redirect} />;
 }

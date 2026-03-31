@@ -117,8 +117,12 @@ export async function mergeGuestCartWithUserCart(
   guestToken: string,
   userId: string
 ): Promise<void> {
-  if (!db) return;
-  // TODO: migrate cart rows when cart table is added
+  try {
+    const { mergeGuestCart } = await import("@/lib/actions/cart");
+    await mergeGuestCart(guestToken, userId);
+  } catch (e) {
+    console.error("[auth] mergeGuestCartWithUserCart error:", e);
+  }
   await clearGuestSession(guestToken);
   console.log(`[auth] Merged guest cart (${guestToken}) → user (${userId})`);
 }
@@ -162,6 +166,46 @@ export async function signUp(formData: FormData) {
   return { success: true };
 }
 
+// ─── Sign Up with server-side redirect ────────────────────────────────────────
+
+export async function signUpAndRedirect(formData: FormData, redirectTo: string) {
+  const raw = {
+    name: formData.get("name"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+  };
+
+  const parsed = signUpSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  const { name, email, password } = parsed.data;
+
+  const { ok, status, data } = await callAuthAPI("/sign-up/email", {
+    name,
+    email,
+    password,
+  });
+
+  if (!ok) {
+    const msg = (data.message as string) ?? "Sign up failed.";
+    if (status === 409 || msg.toLowerCase().includes("already")) {
+      return { error: "An account with this email already exists." };
+    }
+    return { error: msg };
+  }
+
+  const userId = (data.user as { id?: string } | undefined)?.id;
+  if (userId) {
+    const guestToken = await guestSession();
+    if (guestToken) await mergeGuestCartWithUserCart(guestToken, userId);
+  }
+
+  const destination = redirectTo.startsWith("/") ? redirectTo : "/";
+  redirect(destination);
+}
+
 // ─── Sign In ───────────────────────────────────────────────────────────────────
 
 export async function signIn(formData: FormData) {
@@ -189,7 +233,63 @@ export async function signIn(formData: FormData) {
     if (guestToken) await mergeGuestCartWithUserCart(guestToken, userId);
   }
 
-  return { success: true };
+  // Check role so client can redirect to admin dashboard
+  let role = "user";
+  if (userId && db) {
+    try {
+      const { user } = await import("@/lib/db/schema/user");
+      const rows = await db.select({ role: user.role }).from(user).where(eq(user.id, userId)).limit(1);
+      role = rows[0]?.role ?? "user";
+    } catch {
+      // non-fatal
+    }
+  }
+
+  return { success: true, role };
+}
+
+// ─── Sign In with server-side redirect (used when redirectTo is known) ─────────
+// Cookies + redirect in the same response guarantees the browser has the
+// session cookie before it follows the redirect.
+
+export async function signInAndRedirect(formData: FormData, redirectTo: string) {
+  const raw = {
+    email: formData.get("email"),
+    password: formData.get("password"),
+  };
+
+  const parsed = signInSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  const { email, password } = parsed.data;
+
+  const { ok, data } = await callAuthAPI("/sign-in/email", { email, password });
+
+  if (!ok) {
+    return { error: "Invalid email or password." };
+  }
+
+  const userId = (data.user as { id?: string } | undefined)?.id;
+  if (userId) {
+    const guestToken = await guestSession();
+    if (guestToken) await mergeGuestCartWithUserCart(guestToken, userId);
+  }
+
+  // Determine destination — admins always go to dashboard
+  let destination = redirectTo.startsWith("/") ? redirectTo : "/";
+  if (userId && db) {
+    try {
+      const { user } = await import("@/lib/db/schema/user");
+      const rows = await db.select({ role: user.role }).from(user).where(eq(user.id, userId)).limit(1);
+      if (rows[0]?.role === "admin") destination = "/admin/dashboard";
+    } catch {
+      // non-fatal
+    }
+  }
+
+  redirect(destination);
 }
 
 // ─── Sign Out ──────────────────────────────────────────────────────────────────
@@ -198,8 +298,8 @@ export async function signOut() {
   await callAuthAPI("/sign-out", {}).catch(() => null);
 
   const cookieStore = await cookies();
-  cookieStore.delete("auth_session");
   cookieStore.delete("better-auth.session_token");
+  cookieStore.delete("better-auth.session_data");
 
   redirect("/sign-in");
 }

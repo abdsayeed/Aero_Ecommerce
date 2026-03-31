@@ -39,17 +39,17 @@ export const paymentStatusEnum = pgEnum("payment_status", [
 
 export const orders = pgTable("orders", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => user.id),
+  // userId is nullable to support guest orders (Task 2)
+  userId: uuid("user_id").references(() => user.id),
+  // guestEmail stored for guest order lookup — no auth required
+  guestEmail: text("guest_email"),
   status: orderStatusEnum("status").notNull().default("pending"),
   totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
-  shippingAddressId: uuid("shipping_address_id")
-    .notNull()
-    .references(() => addresses.id),
-  billingAddressId: uuid("billing_address_id")
-    .notNull()
-    .references(() => addresses.id),
+  // Address IDs are nullable — guests may not have a DB user to attach addresses to
+  shippingAddressId: uuid("shipping_address_id").references(() => addresses.id),
+  billingAddressId: uuid("billing_address_id").references(() => addresses.id),
+  // Coupon applied at checkout (Task 5)
+  couponCode: text("coupon_code"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
