@@ -5,16 +5,16 @@ import { checkRateLimit } from "@/lib/utils/rateLimit";
 
 export const dynamic = "force-dynamic";
 
-const { GET: authGET, POST: authPOST } = toNextJsHandler(auth);
+const handler = toNextJsHandler(auth);
 
 // Rate-limit sign-in and sign-up endpoints: 10 attempts per IP per minute
-export async function GET(req: NextRequest, ctx: { params: Promise<{ all: string[] }> }) {
-  return authGET(req, ctx);
+export async function GET(req: NextRequest) {
+  return handler.GET(req);
 }
 
-export async function POST(req: NextRequest, ctx: { params: Promise<{ all: string[] }> }) {
-  const { all } = await ctx.params;
-  const path = all?.join("/") ?? "";
+export async function POST(req: NextRequest) {
+  const url = new URL(req.url);
+  const path = url.pathname.replace(/^\/api\/auth\//, "");
 
   if (path === "sign-in/email" || path === "sign-up/email") {
     const ip =
@@ -31,5 +31,5 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ all: strin
     }
   }
 
-  return authPOST(req, ctx);
+  return handler.POST(req);
 }
