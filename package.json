@@ -1,4 +1,10 @@
 {
-  "name": "aero-ecommerce",
-  "version": "0.1.0"
+  "name": "aero-ecommerce-root",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "cd aero-ecommerce && npm install && npm run build",
+    "dev": "cd aero-ecommerce && npm run dev",
+    "start": "cd aero-ecommerce && npm run start"
+  }
 }
