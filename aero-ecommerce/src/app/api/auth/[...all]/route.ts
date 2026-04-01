@@ -7,7 +7,6 @@ export const dynamic = "force-dynamic";
 
 const handler = toNextJsHandler(auth);
 
-// Rate-limit sign-in and sign-up endpoints: 10 attempts per IP per minute
 export async function GET(req: NextRequest) {
   return handler.GET(req);
 }
