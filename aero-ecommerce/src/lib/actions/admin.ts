@@ -5,7 +5,6 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { products, productVariants } from "@/lib/db/schema/products";
-import { orders } from "@/lib/db/schema/orders";
 import { user } from "@/lib/db/schema/user";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -61,7 +60,7 @@ export async function toggleProductPublished(
   }
 }
 
-// ─── updateOrderStatus ────────────────────────────────────────────────────────
+// ─── updateOrderStatus — delegates to OrderService ───────────────────────────
 
 const orderStatusValues = ["pending", "paid", "shipped", "delivered", "cancelled"] as const;
 const updateOrderStatusSchema = z.object({
@@ -77,16 +76,24 @@ export async function updateOrderStatus(
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   try {
-    await requireAdmin();
-    if (!db) return { error: "Service unavailable." };
+    const actorId = await requireAdmin();
+    const { OrderService } = await import("@/lib/services/order.service");
+    const result = await OrderService.updateStatus(
+      parsed.data.orderId,
+      parsed.data.status,
+      actorId
+    );
 
-    await db
-      .update(orders)
-      .set({ status: parsed.data.status })
-      .where(eq(orders.id, orderId));
+    if (result.error) {
+      if (result.error === "ORDER_NOT_FOUND") return { error: "Order not found." };
+      if (result.error.startsWith("INVALID_TRANSITION")) {
+        return { error: `Invalid status transition: ${result.error.split(": ")[1] ?? ""}` };
+      }
+      return { error: result.error };
+    }
 
     revalidatePath("/admin/orders");
-    return { data: { status: parsed.data.status } };
+    return { data: { status: result.data!.status } };
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Unknown error";
     if (msg === "Forbidden") return { error: "Admin access required." };

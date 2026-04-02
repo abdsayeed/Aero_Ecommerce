@@ -9,7 +9,15 @@ import {
   jsonb,
   real,
   index,
+  customType,
 } from "drizzle-orm/pg-core";
+
+// Custom tsvector type for full-text search
+const tsvector = customType<{ data: string }>({
+  dataType() {
+    return "tsvector";
+  },
+});
 import { relations } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { categories } from "./categories";
@@ -37,6 +45,8 @@ export const products = pgTable(
       .references(() => brands.id),
     isPublished: boolean("is_published").notNull().default(false),
     defaultVariantId: uuid("default_variant_id"),
+    searchVector: tsvector("search_vector"),
+    deletedAt: timestamp("deleted_at"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
@@ -45,6 +55,7 @@ export const products = pgTable(
     index("idx_products_category_published").on(t.categoryId, t.isPublished),
     index("idx_products_gender_published").on(t.genderId, t.isPublished),
     index("idx_products_created_at").on(t.createdAt),
+    index("idx_products_search_vector").using("gin", t.searchVector),
   ]
 );
 
@@ -67,12 +78,14 @@ export const productVariants = pgTable(
       .notNull()
       .references(() => sizes.id),
     inStock: integer("in_stock").notNull().default(0),
+    lowStockThreshold: integer("low_stock_threshold").notNull().default(5),
     weight: real("weight"),
     dimensions: jsonb("dimensions").$type<{
       length: number;
       width: number;
       height: number;
     }>(),
+    deletedAt: timestamp("deleted_at"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (t) => [

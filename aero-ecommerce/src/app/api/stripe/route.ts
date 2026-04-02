@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe/client";
-import { createOrder } from "@/lib/actions/orders";
+import { logger } from "@/lib/logger";
+import { OrderService } from "@/lib/services/order.service";
+import { StockReservationRepository } from "@/lib/repositories/stockReservation.repository";
+import { db } from "@/lib/db";
+import { eq, sql } from "drizzle-orm";
+import { productVariants } from "@/lib/db/schema/products";
 import type Stripe from "stripe";
 
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET ?? "";
@@ -10,7 +15,7 @@ export async function POST(req: NextRequest) {
   const sig = req.headers.get("stripe-signature");
 
   if (!sig) {
-    console.error("[stripe webhook] Missing stripe-signature header");
+    logger.error("[stripe webhook] Missing stripe-signature header");
     return NextResponse.json({ error: "Missing stripe-signature header" }, { status: 400 });
   }
 
@@ -18,7 +23,7 @@ export async function POST(req: NextRequest) {
   try {
     event = stripe.webhooks.constructEvent(body, sig, WEBHOOK_SECRET);
   } catch (err) {
-    console.error("[stripe webhook] Signature verification failed:", err);
+    logger.error({ err }, "[stripe webhook] Signature verification failed");
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -26,57 +31,45 @@ export async function POST(req: NextRequest) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        console.log(`[stripe webhook] checkout.session.completed: ${session.id}`);
+        logger.info({ eventId: event.id, sessionId: session.id }, "checkout.session.completed");
 
-        const orderId = await createOrder(session);
+        const result = await OrderService.createFromStripeSession(session);
+        if (result.error) {
+          logger.error({ error: result.error, sessionId: session.id }, "Order creation failed");
+        } else {
+          logger.info({ orderId: result.data, sessionId: session.id }, "Order created successfully");
+        }
+        break;
+      }
 
-        // Fire-and-forget order confirmation email — do not block webhook response
-        if (orderId && session.customer_details?.email) {
-          const email = session.customer_details.email;
-          const name = session.customer_details.name ?? undefined;
+      case "checkout.session.expired": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        logger.info({ eventId: event.id, sessionId: session.id }, "checkout.session.expired — restoring stock");
 
-          import("@/lib/actions/orders")
-            .then(({ getOrder }) => getOrder(orderId))
-            .then(async (orderDetail) => {
-              if (!orderDetail) return;
-              // Build a minimal OrderFull for the email template
-              const { sendOrderConfirmation } = await import("@/lib/email");
-              const { getMyOrder } = await import("@/lib/actions/account");
-              // getMyOrder requires auth — use getOrder for webhook context
-              // Build a compatible shape from orderDetail
-              const orderFull = {
-                id: orderDetail.id,
-                status: orderDetail.status,
-                totalAmount: orderDetail.totalAmount,
-                createdAt: orderDetail.createdAt,
-                couponCode: null,
-                stripeTransactionId: orderDetail.stripeSessionId
-                  ? `...${orderDetail.stripeSessionId.slice(-8)}`
-                  : null,
-                shippingAddress: null,
-                items: orderDetail.items.map((i) => ({
-                  id: i.id,
-                  productName: "Item",
-                  colorName: "",
-                  sizeName: "",
-                  quantity: i.quantity,
-                  priceAtPurchase: i.priceAtPurchase,
-                  image: null,
-                })),
-              };
-              await sendOrderConfirmation(email, orderFull, name);
-            })
-            .catch((e) => {
-              console.error(`[stripe webhook] Email send failed for order ${orderId}:`, e);
-            });
+        if (db) {
+          const reservations = await StockReservationRepository.findBySessionId(session.id);
+
+          for (const reservation of reservations) {
+            await db
+              .update(productVariants)
+              .set({ inStock: sql`${productVariants.inStock} + ${reservation.quantity}` })
+              .where(eq(productVariants.id, reservation.productVariantId));
+          }
+
+          await StockReservationRepository.deleteBySessionId(session.id);
+          logger.info(
+            { sessionId: session.id, restoredCount: reservations.length },
+            "Stock restored after session expiry"
+          );
         }
         break;
       }
 
       case "payment_intent.payment_failed": {
         const intent = event.data.object as Stripe.PaymentIntent;
-        console.error(
-          `[stripe webhook] payment_intent.payment_failed: ${intent.id} — ${intent.last_payment_error?.message ?? "unknown error"}`
+        logger.error(
+          { intentId: intent.id, reason: intent.last_payment_error?.message },
+          "payment_intent.payment_failed"
         );
         break;
       }
@@ -85,7 +78,7 @@ export async function POST(req: NextRequest) {
         break;
     }
   } catch (e) {
-    console.error(`[stripe webhook] Handler error for event ${event.type} (${event.id}):`, e);
+    logger.error({ err: e, eventType: event.type, eventId: event.id }, "Webhook handler error");
     return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 });
   }
 

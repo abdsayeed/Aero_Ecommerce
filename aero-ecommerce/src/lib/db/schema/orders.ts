@@ -6,6 +6,8 @@ import {
   timestamp,
   text,
   pgEnum,
+  index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
@@ -37,21 +39,30 @@ export const paymentStatusEnum = pgEnum("payment_status", [
 
 // ─── Orders ───────────────────────────────────────────────────────────────────
 
-export const orders = pgTable("orders", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  // userId is nullable to support guest orders (Task 2)
-  userId: uuid("user_id").references(() => user.id),
-  // guestEmail stored for guest order lookup — no auth required
-  guestEmail: text("guest_email"),
-  status: orderStatusEnum("status").notNull().default("pending"),
-  totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
-  // Address IDs are nullable — guests may not have a DB user to attach addresses to
-  shippingAddressId: uuid("shipping_address_id").references(() => addresses.id),
-  billingAddressId: uuid("billing_address_id").references(() => addresses.id),
-  // Coupon applied at checkout (Task 5)
-  couponCode: text("coupon_code"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+export const orders = pgTable(
+  "orders",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // userId is nullable to support guest orders (Task 2)
+    userId: uuid("user_id").references(() => user.id),
+    // guestEmail stored for guest order lookup — no auth required
+    guestEmail: text("guest_email"),
+    status: orderStatusEnum("status").notNull().default("pending"),
+    totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
+    // Address IDs are nullable — guests may not have a DB user to attach addresses to
+    shippingAddressId: uuid("shipping_address_id").references(
+      () => addresses.id
+    ),
+    billingAddressId: uuid("billing_address_id").references(() => addresses.id),
+    // Coupon applied at checkout (Task 5)
+    couponCode: text("coupon_code"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    index("idx_orders_user_id").on(t.userId),
+    index("idx_orders_created_at").on(t.createdAt),
+  ]
+);
 
 // ─── Order Items ──────────────────────────────────────────────────────────────
 
@@ -72,16 +83,20 @@ export const orderItems = pgTable("order_items", {
 
 // ─── Payments ─────────────────────────────────────────────────────────────────
 
-export const payments = pgTable("payments", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  orderId: uuid("order_id")
-    .notNull()
-    .references(() => orders.id, { onDelete: "cascade" }),
-  method: paymentMethodEnum("method").notNull(),
-  status: paymentStatusEnum("status").notNull().default("initiated"),
-  paidAt: timestamp("paid_at"),
-  transactionId: text("transaction_id"),
-});
+export const payments = pgTable(
+  "payments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orderId: uuid("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    method: paymentMethodEnum("method").notNull(),
+    status: paymentStatusEnum("status").notNull().default("initiated"),
+    paidAt: timestamp("paid_at"),
+    transactionId: text("transaction_id"),
+  },
+  (t) => [uniqueIndex("idx_payments_transaction_id").on(t.transactionId)]
+);
 
 // ─── Relations ────────────────────────────────────────────────────────────────
 

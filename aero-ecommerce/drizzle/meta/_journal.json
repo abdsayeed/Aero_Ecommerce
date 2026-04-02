@@ -15,6 +15,13 @@
       "when": 1774966870041,
       "tag": "0001_stiff_lester",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775140693906,
+      "tag": "0002_fair_scourge",
+      "breakpoints": true
     }
   ]
 }

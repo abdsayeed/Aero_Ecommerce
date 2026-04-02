@@ -13,6 +13,7 @@ export default async function AdminInventoryPage() {
       id: productVariants.id,
       sku: productVariants.sku,
       inStock: productVariants.inStock,
+      lowStockThreshold: productVariants.lowStockThreshold,
       productName: products.name,
       colorName: colors.name,
       sizeName: sizes.name,

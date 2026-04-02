@@ -2,10 +2,12 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import { guest } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { signUpSchema, signInSchema } from "./validation";
+import { authRateLimit } from "@/lib/utils/rateLimit";
 import { randomUUID } from "crypto";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -87,6 +89,13 @@ async function callAuthAPI(
   return { ok: res.ok, status: res.status, data };
 }
 
+// ─── Helper: get client IP ────────────────────────────────────────────────────
+
+async function getClientIp(): Promise<string> {
+  const h = await headers();
+  return h.get("x-forwarded-for") ?? h.get("x-real-ip") ?? "unknown";
+}
+
 // ─── Guest Session ─────────────────────────────────────────────────────────────
 
 export async function guestSession(): Promise<string | null> {
@@ -141,6 +150,12 @@ export async function signUp(formData: FormData) {
     return { error: parsed.error.issues[0].message };
   }
 
+  const ip = await getClientIp();
+  const rateCheck = authRateLimit(ip);
+  if (!rateCheck.allowed) {
+    return { error: `Too many attempts. Try again in ${rateCheck.retryAfterSeconds}s.` };
+  }
+
   const { name, email, password } = parsed.data;
 
   const { ok, status, data } = await callAuthAPI("/sign-up/email", {
@@ -180,6 +195,12 @@ export async function signUpAndRedirect(formData: FormData, redirectTo: string) 
     return { error: parsed.error.issues[0].message };
   }
 
+  const ip = await getClientIp();
+  const rateCheck = authRateLimit(ip);
+  if (!rateCheck.allowed) {
+    return { error: `Too many attempts. Try again in ${rateCheck.retryAfterSeconds}s.` };
+  }
+
   const { name, email, password } = parsed.data;
 
   const { ok, status, data } = await callAuthAPI("/sign-up/email", {
@@ -217,6 +238,12 @@ export async function signIn(formData: FormData) {
   const parsed = signInSchema.safeParse(raw);
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
+  }
+
+  const ip = await getClientIp();
+  const rateCheck = authRateLimit(ip);
+  if (!rateCheck.allowed) {
+    return { error: `Too many attempts. Try again in ${rateCheck.retryAfterSeconds}s.` };
   }
 
   const { email, password } = parsed.data;
@@ -261,6 +288,12 @@ export async function signInAndRedirect(formData: FormData, redirectTo: string) 
   const parsed = signInSchema.safeParse(raw);
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
+  }
+
+  const ip = await getClientIp();
+  const rateCheck = authRateLimit(ip);
+  if (!rateCheck.allowed) {
+    return { error: `Too many attempts. Try again in ${rateCheck.retryAfterSeconds}s.` };
   }
 
   const { email, password } = parsed.data;

@@ -1,27 +1,24 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      // Neon / Supabase / S3 hosted product images (if any)
       {
         protocol: "https",
         hostname: "**.neon.tech",
         pathname: "/**",
       },
-      // Unsplash (used in seed data)
       {
         protocol: "https",
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
-      // Google profile pictures (Google OAuth)
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
         pathname: "/**",
       },
-      // Any other CDN your product images may come from
       {
         protocol: "https",
         hostname: "**.cloudinary.com",
@@ -31,4 +28,9 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // Suppress source map upload warnings when SENTRY_AUTH_TOKEN is not set
+  silent: !process.env.SENTRY_AUTH_TOKEN,
+  // Disable Sentry telemetry
+  telemetry: false,
+});

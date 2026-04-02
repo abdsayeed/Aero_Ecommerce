@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { PackageX } from "lucide-react";
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductGalleryDB from "@/components/ProductGalleryDB";
@@ -24,6 +25,34 @@ import { headers } from "next/headers";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Params = Promise<{ id: string }>;
+
+// ─── generateMetadata ─────────────────────────────────────────────────────────
+
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { id } = await params;
+  let product: ProductDetail | null = null;
+  try {
+    product = await getProduct(id);
+  } catch {
+    // fall through
+  }
+
+  if (!product || !product.isPublished) {
+    return { title: "Product Not Found | Aero Store" };
+  }
+
+  const primaryImage = product.images.find((img) => img.isPrimary)?.url ?? product.images[0]?.url;
+
+  return {
+    title: `${product.name} | Aero Store`,
+    description: product.description.slice(0, 160),
+    openGraph: {
+      title: product.name,
+      description: product.description.slice(0, 160),
+      ...(primaryImage ? { images: [{ url: primaryImage }] } : {}),
+    },
+  };
+}
 
 // ─── Not Found block ──────────────────────────────────────────────────────────
 
@@ -287,6 +316,30 @@ export default async function ProductDetailPage({ params }: { params: Params }) 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-light-100)]">
       <Navbar />
+
+      {/* JSON-LD Product schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.name,
+            description: product.description,
+            image: images[0]?.url,
+            brand: { "@type": "Brand", name: product.brand.name },
+            offers: {
+              "@type": "Offer",
+              priceCurrency: "USD",
+              price: salePrice ? salePrice.toFixed(2) : price.toFixed(2),
+              availability:
+                product.variants.some((v) => v.inStock > 0)
+                  ? "https://schema.org/InStock"
+                  : "https://schema.org/OutOfStock",
+            },
+          }),
+        }}
+      />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-8">
 

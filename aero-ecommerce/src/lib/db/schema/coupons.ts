@@ -25,6 +25,7 @@ export const coupons = pgTable("coupons", {
   expiresAt: timestamp("expires_at").notNull(),
   maxUsage: integer("max_usage").notNull(),
   usedCount: integer("used_count").notNull().default(0),
+  deletedAt: timestamp("deleted_at"),
 });
 
 export const insertCouponSchema = createInsertSchema(coupons);

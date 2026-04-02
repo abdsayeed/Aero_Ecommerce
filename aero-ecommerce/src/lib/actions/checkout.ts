@@ -1,73 +1,61 @@
 "use server";
 
-import { stripe } from "@/lib/stripe/client";
-import { getCart } from "@/lib/actions/cart";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-
-const BASE_URL = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
+import { checkRateLimit } from "@/lib/utils/rateLimit";
+import { initiateCheckoutSchema } from "@/lib/validations/checkout";
+import { CheckoutService } from "@/lib/services/checkout.service";
+import { getCart } from "@/lib/actions/cart";
 
 export async function createStripeCheckoutSession(couponCode?: string): Promise<
   { url: string } | { error: string }
 > {
+  // Rate limit by session/IP
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for") ?? "unknown";
+  const rateCheck = await checkRateLimit(`checkout:${ip}`, { maxRequests: 10, windowMs: 60_000 });
+  if (!rateCheck.allowed) {
+    return { error: `Too many requests. Try again in ${rateCheck.retryAfterSeconds}s.` };
+  }
+
+  const cartResult = await getCart();
+  if (!cartResult || cartResult.items.length === 0) {
+    return { error: "Your cart is empty." };
+  }
+
+  // Validate input
+  const parsed = initiateCheckoutSchema.safeParse({ cartId: cartResult.cartId, couponCode });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  let userEmail: string | undefined;
+  let userId: string | undefined;
   try {
-    const cartResult = await getCart();
+    const session = await auth.api.getSession({ headers: headersList });
+    userEmail = session?.user?.email ?? undefined;
+    userId = session?.user?.id ?? undefined;
+  } catch {
+    // guest — continue
+  }
 
-    if (!cartResult || cartResult.items.length === 0) {
-      return { error: "Your cart is empty." };
-    }
+  const result = await CheckoutService.initiateCheckout(
+    parsed.data.cartId,
+    userId,
+    userEmail,
+    parsed.data.couponCode
+  );
 
-    let userEmail: string | undefined;
-    let userId: string | undefined;
-    try {
-      const session = await auth.api.getSession({ headers: await headers() });
-      userEmail = session?.user?.email ?? undefined;
-      userId = session?.user?.id ?? undefined;
-    } catch {
-      // guest — continue
-    }
-
-    const lineItems: import("stripe").Stripe.Checkout.SessionCreateParams.LineItem[] =
-      cartResult.items.map((item) => {
-        const unitPrice = parseFloat(item.salePrice ?? item.price);
-        return {
-          price_data: {
-            currency: "usd",
-            unit_amount: Math.round(unitPrice * 100),
-            product_data: {
-              name: item.productName,
-              description: `${item.colorName} · Size ${item.sizeName}`,
-              ...(item.image ? { images: [item.image] } : {}),
-            },
-          },
-          quantity: item.quantity,
-        };
-      });
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: lineItems,
-      shipping_address_collection: { allowed_countries: ["US", "GB", "CA", "AU", "AE"] },
-      billing_address_collection: "required",
-      ...(userEmail ? { customer_email: userEmail } : {}),
-      metadata: {
-        cartId: cartResult.cartId,
-        ...(userId ? { userId } : {}),
-        ...(couponCode ? { couponCode } : {}),
-      },
-      success_url: `${BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${BASE_URL}/cart`,
-    });
-
-    if (!session.url) return { error: "Failed to create checkout session." };
-    return { url: session.url };
-  } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : "Something went wrong.";
-    console.error("[checkout] createStripeCheckoutSession error:", msg);
-    // Surface Stripe auth errors clearly
-    if (msg.includes("No API key") || msg.includes("Invalid API Key") || msg.includes("placeholder")) {
+  if (result.error) {
+    if (result.error === "STRIPE_NOT_CONFIGURED") {
       return { error: "Payment is not configured yet. Please add your Stripe API key to .env.local." };
     }
-    return { error: msg };
+    if (result.error.startsWith("INSUFFICIENT_STOCK:")) {
+      const sku = result.error.split(":")[1];
+      return { error: `Insufficient stock for item: ${sku}` };
+    }
+    return { error: result.error };
   }
+
+  return { url: result.data!.url };
 }
