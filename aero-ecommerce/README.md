@@ -1,6 +1,6 @@
-# Aero Store
+# Aervyn — Stand Out.
 
-> A production-grade full-stack e-commerce platform for Aero footwear. Built with Next.js 16 App Router, PostgreSQL (Neon), Drizzle ORM, Zustand, Tailwind CSS v4, Better Auth, and Stripe Checkout.
+> A production-grade full-stack e-commerce platform for **Aervyn**, a minimalist luxury streetwear brand. Built with Next.js 16 App Router, PostgreSQL (Neon), Drizzle ORM, Zustand, Tailwind CSS v4, Better Auth, and Stripe Checkout.
 
 ---
 
@@ -15,6 +15,7 @@
 | Auth | Better Auth | 1.5.x |
 | State | Zustand | 5.x |
 | Styling | Tailwind CSS | v4 |
+| Animations | Framer Motion | 12.x |
 | Payments | Stripe Hosted Checkout | 21.x |
 | Email | Resend + React Email | — |
 | Validation | Zod | 4.x |
@@ -39,7 +40,7 @@
 - SEO: `generateMetadata`, JSON-LD Product schema, `/sitemap.xml`, `/robots.txt`
 
 ### Checkout
-- Pre-checkout screen: choose Member login / sign-up or Guest Checkout
+- Pre-checkout screen (`/checkout/options`): choose Aervyn Member login / sign-up or Guest Checkout
 - Coupon code input with live discount calculation (percentage or fixed, $0.50 minimum enforced)
 - Stock reservation on checkout initiation — inventory held for 30 min, restored on session expiry
 - Stripe Hosted Checkout with shipping + billing address collection
@@ -102,9 +103,9 @@ aero-ecommerce/
 │   └── admin-rbac.spec.ts
 │
 ├── public/
-│   ├── IMG_7194.PNG              # Aero logo
+│   ├── IMG_7194.PNG              # Aervyn logo
 │   ├── hero-bg.png / hero-shoe.png
-│   └── shoes/                   # 15 product images
+│   └── shoes/                   # Product images
 │
 ├── src/
 │   ├── app/
@@ -164,7 +165,7 @@ aero-ecommerce/
 │   │   └── cart.store.ts        # Zustand cart store (localStorage persisted)
 │   └── db/
 │       ├── seed2.ts             # Full DB seed
-│       └── create-admin.ts      # Creates admin@aerostore.com account
+│       └── create-admin.ts      # Creates admin account
 ```
 
 ---
@@ -238,8 +239,8 @@ Admin dashboard at `http://localhost:3000/admin/dashboard`.
 
 ### Admin credentials (created by step 5)
 ```
-Email:    admin@aerostore.com
-Password: Admin@Aero2025
+Email:    admin@aervyn.com
+Password: Admin@Aervyn2025
 ```
 
 ### Stripe webhook (local dev)
@@ -383,3 +384,15 @@ npm run test:e2e
 | 3D Secure | `4000 0025 0000 3155` |
 
 Any future expiry, any CVC, any postal code.
+
+---
+
+## Brand
+
+**Aervyn** is a minimalist luxury streetwear label based in London, UK.  
+Tagline: *Stand Out.*  
+Contact: `orders@aervyn.com`
+
+---
+
+© 2025 Aervyn. All rights reserved.
