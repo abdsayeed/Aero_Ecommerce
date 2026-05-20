@@ -47,10 +47,10 @@ export default function AdminSidebar({ user }: Props) {
     <aside className="w-56 shrink-0 bg-[#1a1d23] flex flex-col min-h-screen">
       {/* Logo */}
       <div className="px-5 py-5 flex items-center gap-2.5 border-b border-white/10">
-        <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center shrink-0">
-          <Image src="/IMG_7194.PNG" alt="Aero" width={22} height={22} className="object-contain brightness-0 invert" style={{ width: "auto", height: "18px" }} />
+        <div className="w-8 h-8 rounded-lg bg-[var(--color-dark-900)] flex items-center justify-center shrink-0">
+          <span className="text-white text-xs font-bold">A</span>
         </div>
-        <span className="text-white font-bold text-base tracking-tight">Aero Admin</span>
+        <span className="text-white font-bold text-base tracking-tight">Aervyn Admin</span>
       </div>
 
       <div className="flex-1 overflow-y-auto py-4 flex flex-col gap-6">

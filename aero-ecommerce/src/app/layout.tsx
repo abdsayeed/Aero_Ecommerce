@@ -1,15 +1,39 @@
 import type { Metadata } from "next";
-import { Jost } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const jost = Jost({
-  variable: "--font-jost-var",
+const inter = Inter({
+  variable: "--font-inter-var",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Aero Store",
-  description: "Premium Aero footwear — engineered for performance, built for the streets.",
+  title: "Aervyn — Stand Out.",
+  description:
+    "Premium minimalist men's streetwear. Oversized tees, hoodies, sweatshirts & tracksuits designed for the modern man. Stand Out.",
+  keywords: [
+    "streetwear",
+    "men's clothing",
+    "oversized tees",
+    "hoodies",
+    "tracksuits",
+    "minimalist fashion",
+    "premium clothing",
+  ],
+  openGraph: {
+    title: "Aervyn — Stand Out.",
+    description:
+      "Premium minimalist men's streetwear. Oversized tees, hoodies, sweatshirts & tracksuits.",
+    siteName: "Aervyn",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Aervyn — Stand Out.",
+    description:
+      "Premium minimalist men's streetwear. Oversized tees, hoodies, sweatshirts & tracksuits.",
+  },
 };
 
 export default function RootLayout({
@@ -18,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${jost.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

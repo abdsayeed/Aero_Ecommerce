@@ -21,7 +21,7 @@ function RecommendedCard({ product }: { product: RecommendedProduct }) {
             src={product.primaryImage}
             alt={product.name}
             fill
-            className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+            className="object-cover group-hover:scale-105 transition-transform duration-700"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (

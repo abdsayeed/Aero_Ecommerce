@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import AuthForm from "@/components/AuthForm";
 
 export const metadata: Metadata = {
-  title: "Sign Up — Aero Store",
-  description: "Create your Aero Store account.",
+  title: "Sign Up — Aervyn",
+  description: "Create your Aervyn account.",
 };
 
 type Props = { searchParams: Promise<{ redirect?: string }> };

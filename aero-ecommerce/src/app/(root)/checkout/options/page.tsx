@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import Link from "next/link";
-import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { getCart } from "@/lib/actions/cart";
 
@@ -25,15 +24,10 @@ export default async function CheckoutOptionsPage() {
 
       {/* ── Minimal header ── */}
       <header className="border-b border-[var(--color-light-300)] px-6 py-4 flex items-center justify-between">
-        <Link href="/" aria-label="Aero Store Home">
-          <Image
-            src="/IMG_7194.PNG"
-            alt="Aero"
-            width={72}
-            height={48}
-            className="object-contain"
-            priority
-          />
+        <Link href="/" aria-label="Aervyn Home">
+          <span className="text-lg font-semibold tracking-[0.15em] uppercase text-[var(--color-dark-900)]">
+            AERVYN
+          </span>
         </Link>
         <Link
           href="/cart"
@@ -71,12 +65,11 @@ export default async function CheckoutOptionsPage() {
           <div className="bg-[var(--color-light-100)] px-10 py-12 flex flex-col items-center text-center gap-5">
             <div className="flex flex-col gap-2">
               <h2 className="text-[length:var(--text-body-medium)] font-semibold text-[var(--color-dark-900)]">
-                Check out as an Aero Member for free
-                <br />
-                delivery on orders over £50
+                Check out as an Aervyn Member for free
+                <br />delivery on orders over £50
               </h2>
               <p className="text-[length:var(--text-caption)] text-[var(--color-dark-700)] mt-1">
-                Use your Aero Member sign-in for exclusive member benefits and
+                Use your Aervyn Member sign-in for exclusive benefits and
                 order tracking.
               </p>
             </div>
@@ -84,13 +77,13 @@ export default async function CheckoutOptionsPage() {
             <div className="flex flex-col gap-3 w-full mt-2">
               <Link
                 href="/sign-in?redirect=/checkout"
-                className="w-full h-12 rounded-full bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[length:var(--text-body-medium)] font-medium flex items-center justify-center hover:bg-[var(--color-dark-700)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-dark-900)] focus-visible:ring-offset-2"
+                className="w-full h-12 bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[length:var(--text-body-medium)] font-medium flex items-center justify-center hover:bg-[var(--color-charcoal)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-dark-900)] focus-visible:ring-offset-2"
               >
                 Log In
               </Link>
               <Link
                 href="/sign-up?redirect=/checkout"
-                className="w-full h-12 rounded-full bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[length:var(--text-body-medium)] font-medium flex items-center justify-center hover:bg-[var(--color-dark-700)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-dark-900)] focus-visible:ring-offset-2"
+                className="w-full h-12 bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[length:var(--text-body-medium)] font-medium flex items-center justify-center hover:bg-[var(--color-charcoal)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-dark-900)] focus-visible:ring-offset-2"
               >
                 Sign Up
               </Link>
@@ -104,7 +97,7 @@ export default async function CheckoutOptionsPage() {
                 Check Out as Guest
               </h2>
               <p className="text-[length:var(--text-caption)] text-[var(--color-dark-700)] mt-1">
-                You can create a free Aero Member Profile at any point during
+                You can create a free Aervyn account at any point during
                 the checkout process.
               </p>
             </div>
@@ -112,7 +105,7 @@ export default async function CheckoutOptionsPage() {
             <div className="w-full mt-2">
               <Link
                 href="/checkout"
-                className="w-full h-12 rounded-full bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[length:var(--text-body-medium)] font-medium flex items-center justify-center hover:bg-[var(--color-dark-700)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-dark-900)] focus-visible:ring-offset-2"
+                className="w-full h-12 bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[length:var(--text-body-medium)] font-medium flex items-center justify-center hover:bg-[var(--color-charcoal)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-dark-900)] focus-visible:ring-offset-2"
               >
                 Guest Checkout
               </Link>
@@ -124,7 +117,7 @@ export default async function CheckoutOptionsPage() {
       {/* ── Footer ── */}
       <footer className="border-t border-[var(--color-light-300)] px-6 py-5">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-[length:var(--text-footnote)] text-[var(--color-dark-500)]">
-          <span>© {new Date().getFullYear()} Aero Store. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} Aervyn. All rights reserved.</span>
           <div className="flex items-center gap-5">
             <Link
               href="/contact"

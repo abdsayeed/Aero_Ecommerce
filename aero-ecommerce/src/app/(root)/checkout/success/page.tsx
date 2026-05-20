@@ -26,6 +26,7 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-light-100)]">
+      <div className="h-16" />
       <Navbar />
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-8">
         <OrderSuccess session={session} />

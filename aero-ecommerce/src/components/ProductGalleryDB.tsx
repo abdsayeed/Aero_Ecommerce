@@ -104,7 +104,7 @@ export default function ProductGalleryDB({
                   src={img.url}
                   alt={`${productName} view ${i + 1}`}
                   fill
-                  className="object-contain p-1"
+                  className="object-cover"
                   sizes="72px"
                 />
               </button>
@@ -185,7 +185,7 @@ export default function ProductGalleryDB({
                       src={swatchImg}
                       alt={color.name}
                       fill
-                      className="object-contain p-1"
+                      className="object-cover"
                       sizes="52px"
                     />
                   ) : (

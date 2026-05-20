@@ -20,7 +20,7 @@ export default function OrderConfirmation({ order, customerName }: OrderConfirma
             Order Confirmed
           </Heading>
           <Text style={{ color: "#757575", marginBottom: 24 }}>
-            {greeting} Your Aero order has been confirmed and is being prepared.
+            {greeting} Your Aervyn order has been confirmed and is being prepared.
           </Text>
 
           <Section style={{ backgroundColor: "#f5f5f5", padding: 16, marginBottom: 24 }}>
@@ -88,7 +88,7 @@ export default function OrderConfirmation({ order, customerName }: OrderConfirma
             Estimated delivery: 3–5 business days · Free returns within 30 days
           </Text>
           <Text style={{ color: "#aaaaaa", fontSize: 12, textAlign: "center" }}>
-            © {new Date().getFullYear()} Aero Store, London, UK
+            © {new Date().getFullYear()} Aervyn, London, UK
           </Text>
         </Container>
       </Body>
