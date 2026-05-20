@@ -33,13 +33,13 @@ function Pagination({
 
   return (
     <nav
-      className="flex items-center justify-center gap-2 mt-12"
+      className="flex items-center justify-center gap-2 mt-16"
       aria-label="Pagination"
     >
       {page > 1 && (
         <Link
           href={makeHref(page - 1)}
-          className="px-4 py-2 text-[length:var(--text-caption)] font-medium text-[var(--color-dark-900)] border border-[var(--color-light-300)] hover:bg-[var(--color-light-200)] transition-colors"
+          className="px-5 py-2.5 text-[12px] font-medium tracking-wide uppercase text-[var(--color-dark-900)] border border-[var(--color-light-300)] hover:border-[var(--color-dark-900)] transition-colors"
         >
           ← Prev
         </Link>
@@ -61,10 +61,10 @@ function Pagination({
             <Link
               key={p}
               href={makeHref(p as number)}
-              className={`px-4 py-2 text-[length:var(--text-caption)] font-medium transition-colors ${
+              className={`px-4 py-2.5 text-[12px] font-medium tracking-wide transition-colors ${
                 p === page
                   ? "bg-[var(--color-dark-900)] text-[var(--color-light-100)]"
-                  : "text-[var(--color-dark-900)] border border-[var(--color-light-300)] hover:bg-[var(--color-light-200)]"
+                  : "text-[var(--color-dark-900)] border border-[var(--color-light-300)] hover:border-[var(--color-dark-900)]"
               }`}
               aria-current={p === page ? "page" : undefined}
             >
@@ -76,7 +76,7 @@ function Pagination({
       {page < totalPages && (
         <Link
           href={makeHref(page + 1)}
-          className="px-4 py-2 text-[length:var(--text-caption)] font-medium text-[var(--color-dark-900)] border border-[var(--color-light-300)] hover:bg-[var(--color-light-200)] transition-colors"
+          className="px-5 py-2.5 text-[12px] font-medium tracking-wide uppercase text-[var(--color-dark-900)] border border-[var(--color-light-300)] hover:border-[var(--color-dark-900)] transition-colors"
         >
           Next →
         </Link>
@@ -106,31 +106,38 @@ export default async function ProductsPage({
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-light-100)]">
+      {/* Spacer for fixed navbar */}
+      <div className="h-16" />
       <Navbar />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-8">
 
         {/* Top bar */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-[length:var(--text-body-medium)] font-medium text-[var(--color-dark-900)]">
-            {filters.search
-              ? `Results for "${filters.search}" (${totalCount})`
-              : `New (${totalCount})`}
-          </h1>
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[var(--color-dark-500)] block mb-1">
+              {filters.search ? "Search Results" : "Collection"}
+            </span>
+            <h1 className="text-2xl font-semibold text-[var(--color-dark-900)] tracking-tight">
+              {filters.search
+                ? `"${filters.search}" (${totalCount})`
+                : `All Products (${totalCount})`}
+            </h1>
+          </div>
           <Suspense fallback={null}>
             <Sort />
           </Suspense>
         </div>
 
         {/* Mobile filter trigger */}
-        <div className="flex items-center gap-3 mb-4 lg:hidden">
+        <div className="flex items-center gap-3 mb-6 lg:hidden">
           <Suspense fallback={null}>
             <Filters totalCount={totalCount} mobileOnly />
           </Suspense>
         </div>
 
         {/* Sidebar + grid */}
-        <div className="flex gap-8 items-start">
+        <div className="flex gap-10 items-start">
           <Suspense fallback={null}>
             <Filters totalCount={totalCount} desktopOnly />
           </Suspense>
@@ -138,24 +145,24 @@ export default async function ProductsPage({
           <div className="flex-1 min-w-0">
             {productList.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center">
-                <p className="text-[length:var(--text-heading-3)] font-medium text-[var(--color-dark-900)] mb-2">
+                <p className="text-xl font-medium text-[var(--color-dark-900)] mb-3 tracking-tight">
                   No products found
                 </p>
-                <p className="text-[length:var(--text-body)] text-[var(--color-dark-700)] mb-6">
+                <p className="text-[14px] text-[var(--color-dark-700)] mb-8 max-w-sm">
                   {filters.search
                     ? `We couldn't find anything for "${filters.search}". Try a different term.`
                     : "Try adjusting your filters or clearing them."}
                 </p>
                 <Link
                   href="/products"
-                  className="px-6 py-2.5 bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[length:var(--text-body-medium)] font-medium hover:bg-[var(--color-dark-700)] transition-colors"
+                  className="px-8 py-3 bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[13px] font-medium tracking-wide uppercase hover:bg-[var(--color-charcoal)] transition-colors"
                 >
                   {filters.search ? "Clear Search" : "Clear Filters"}
                 </Link>
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10">
                   {productList.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}

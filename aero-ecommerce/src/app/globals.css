@@ -1,37 +1,47 @@
 @import "tailwindcss";
 
 @theme {
-  /* Dark shades */
-  --color-dark-900: #111111;
-  --color-dark-700: #757575;
-  --color-dark-500: #aaaaaa;
+  /* ── Brand Colors ── */
+  --color-dark-900: #0a0a0a;
+  --color-dark-800: #1a1a1a;
+  --color-dark-700: #6b6b6b;
+  --color-dark-500: #9a9a9a;
 
   /* Light shades */
   --color-light-100: #ffffff;
-  --color-light-200: #f5f5f5;
-  --color-light-300: #e5e5e5;
-  --color-light-400: #cccccc;
+  --color-light-200: #fafafa;
+  --color-light-300: #efefef;
+  --color-light-400: #d4d4d4;
+
+  /* Brand accent */
+  --color-beige: #d4c5a9;
+  --color-beige-light: #f5f0e8;
+  --color-charcoal: #2d2d2d;
+  --color-silver: #c0c0c0;
 
   /* Supporting colors */
-  --color-green: #007d48;
-  --color-red: #d33918;
-  --color-orange: #d37918;
+  --color-green: #2d7a4f;
+  --color-red: #c5303c;
+  --color-orange: #c47a1e;
 
   /* Font family */
-  --font-jost: var(--font-jost-var), "Jost", sans-serif;
+  --font-inter: var(--font-inter-var), "Inter", sans-serif;
 
   /* Heading sizes */
   --text-heading-1: 72px;
-  --text-heading-1--line-height: 78px;
-  --text-heading-1--font-weight: 700;
+  --text-heading-1--line-height: 76px;
+  --text-heading-1--font-weight: 600;
+  --text-heading-1--letter-spacing: -0.03em;
 
-  --text-heading-2: 56px;
-  --text-heading-2--line-height: 60px;
-  --text-heading-2--font-weight: 700;
+  --text-heading-2: 48px;
+  --text-heading-2--line-height: 52px;
+  --text-heading-2--font-weight: 600;
+  --text-heading-2--letter-spacing: -0.02em;
 
   --text-heading-3: 24px;
   --text-heading-3--line-height: 30px;
   --text-heading-3--font-weight: 500;
+  --text-heading-3--letter-spacing: -0.01em;
 
   /* Lead */
   --text-lead: 20px;
@@ -56,8 +66,100 @@
   --text-footnote: 12px;
   --text-footnote--line-height: 18px;
   --text-footnote--font-weight: 400;
+
+  /* Label */
+  --text-label: 11px;
+  --text-label--line-height: 14px;
+  --text-label--font-weight: 600;
+  --text-label--letter-spacing: 0.12em;
 }
 
+/* ── Base Styles ── */
 body {
-  font-family: var(--font-jost-var), "Jost", sans-serif;
+  font-family: var(--font-inter-var), "Inter", sans-serif;
+  color: var(--color-dark-900);
+  background-color: var(--color-light-100);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Smooth scrolling ── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Selection ── */
+::selection {
+  background-color: var(--color-dark-900);
+  color: var(--color-light-100);
+}
+
+/* ── Custom scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-light-400);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-dark-500);
+}
+
+/* ── Focus visible ── */
+*:focus-visible {
+  outline: 2px solid var(--color-dark-900);
+  outline-offset: 2px;
+}
+
+/* ── Animations ── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out both;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out both;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.6s ease-out both;
+}
+
+.animation-delay-100 { animation-delay: 100ms; }
+.animation-delay-200 { animation-delay: 200ms; }
+.animation-delay-300 { animation-delay: 300ms; }
+.animation-delay-400 { animation-delay: 400ms; }
+.animation-delay-500 { animation-delay: 500ms; }
+
+/* ── Skeleton shimmer ── */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--color-light-200) 25%, var(--color-light-300) 50%, var(--color-light-200) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
 }

@@ -166,7 +166,7 @@ export default function CheckoutPageClient({ initialItems }: Props) {
               name="address"
               value={form.address}
               onChange={handleField}
-              placeholder="Start typing address"
+              placeholder="Start typing your address"
               className={`${inputCls} pl-10`}
             />
           </div>

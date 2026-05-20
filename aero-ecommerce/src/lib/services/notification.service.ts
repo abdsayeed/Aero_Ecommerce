@@ -22,7 +22,7 @@ export const NotificationService = {
       }
       const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
-        from: "Aero Store <orders@aerostore.com>",
+        from: "Aervyn <orders@aervyn.com>",
         to,
         subject: `Your order #${orderId.slice(0, 8).toUpperCase()} has shipped`,
         html: `<p>Great news! Your order has been shipped and is on its way.</p>`,
@@ -66,7 +66,7 @@ export async function sendOrderConfirmationById(
     }
     const resend = new Resend(process.env.RESEND_API_KEY);
     await resend.emails.send({
-      from: "Aero Store <orders@aerostore.com>",
+      from: "Aervyn <orders@aervyn.com>",
       to,
       subject: `Order Confirmed — #${orderId.slice(0, 8).toUpperCase()}`,
       html: `<p>Thank you${customerName ? `, ${customerName}` : ""}! Your order <strong>#${orderId.slice(0, 8).toUpperCase()}</strong> has been confirmed.</p>`,

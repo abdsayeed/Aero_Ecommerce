@@ -11,11 +11,14 @@ export default async function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-light-100)]">
-      {/* Minimal header — just the title, matching reference */}
+      {/* Minimal header — Aervyn checkout */}
       <header className="border-b border-[var(--color-light-300)] py-5 text-center">
-        <h1 className="text-[length:var(--text-body-medium)] font-semibold tracking-wide text-[var(--color-dark-900)]">
+        <span className="text-lg font-semibold tracking-[0.15em] uppercase text-[var(--color-dark-900)]">
+          AERVYN
+        </span>
+        <p className="text-[11px] tracking-[0.1em] uppercase text-[var(--color-dark-500)] mt-1">
           Checkout
-        </h1>
+        </p>
       </header>
 
       <main className="w-full max-w-5xl mx-auto px-4 sm:px-8 py-10">

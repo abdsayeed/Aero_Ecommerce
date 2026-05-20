@@ -68,7 +68,7 @@ export default function AuthForm({ mode, redirectTo }: AuthFormProps) {
       {/* 2. Heading */}
       <div className="text-center mb-6">
         <h1 className="text-[26px] leading-[32px] font-bold text-[#111]">
-          {isSignUp ? "Join Aero Today!" : "Welcome Back!"}
+          {isSignUp ? "Join Aervyn" : "Welcome Back"}
         </h1>
         <p className="mt-1 text-sm text-[#757575]">
           {isSignUp

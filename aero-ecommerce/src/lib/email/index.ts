@@ -18,7 +18,7 @@ export async function sendOrderConfirmation(
   try {
     const html = await render(OrderConfirmation({ order, customerName }));
     await resend.emails.send({
-      from: "Aero Store <orders@aerostore.com>",
+      from: "Aervyn <orders@aervyn.com>",
       to,
       subject: `Order Confirmed — #${order.id.slice(0, 8).toUpperCase()}`,
       html,

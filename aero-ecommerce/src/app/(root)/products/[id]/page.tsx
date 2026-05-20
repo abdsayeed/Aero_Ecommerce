@@ -38,13 +38,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   }
 
   if (!product || !product.isPublished) {
-    return { title: "Product Not Found | Aero Store" };
+    return { title: "Product Not Found | Aervyn" };
   }
 
   const primaryImage = product.images.find((img) => img.isPrimary)?.url ?? product.images[0]?.url;
 
   return {
-    title: `${product.name} | Aero Store`,
+    title: `${product.name} | Aervyn`,
     description: product.description.slice(0, 160),
     openGraph: {
       title: product.name,
@@ -59,6 +59,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 function ProductNotFound() {
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-light-100)]">
+      <div className="h-16" />
       <Navbar />
       <main className="flex-1 flex flex-col items-center justify-center gap-4 px-6 text-center">
         <PackageX className="w-12 h-12 text-[var(--color-dark-500)]" />
@@ -315,6 +316,7 @@ export default async function ProductDetailPage({ params }: { params: Params }) 
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-light-100)]">
+      <div className="h-16" />
       <Navbar />
 
       {/* JSON-LD Product schema */}

@@ -1,41 +1,36 @@
 import Link from "next/link";
-import Image from "next/image";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex">
 
-      {/* ── LEFT PANEL ── pure black, logo top-left, tagline bottom-left */}
-      <div className="hidden lg:flex w-1/2 bg-black flex-col justify-between p-10 shrink-0">
+      {/* ── LEFT PANEL ── dark with brand */}
+      <div className="hidden lg:flex w-1/2 bg-[var(--color-dark-900)] flex-col justify-between p-10 shrink-0">
 
-        {/* Aero logo — top left */}
-        <Link href="/" aria-label="Go to Aero Store">
-          <Image
-            src="/IMG_7194.PNG"
-            alt="Aero"
-            width={90}
-            height={60}
-            className="object-contain brightness-0 invert"
-            priority
-          />
+        {/* Logo — top left */}
+        <Link href="/" aria-label="Go to Aervyn">
+          <span className="text-xl font-semibold tracking-[0.15em] uppercase text-[var(--color-light-100)]">
+            AERVYN
+          </span>
         </Link>
 
         {/* Bottom content */}
         <div>
-          <h2 className="text-5xl font-bold text-white leading-tight mb-4">
-            Move in Style.
+          <h2 className="text-5xl font-semibold text-white leading-tight mb-4 tracking-[-0.02em]">
+            Stand Out.
           </h2>
-          <p className="text-[var(--color-dark-500)] text-base leading-relaxed max-w-[280px]">
-            Discover footwear built for performance and designed for life. Your next pair is waiting.
+          <p className="text-[var(--color-dark-500)] text-[15px] leading-relaxed max-w-[300px]">
+            Premium minimalist streetwear for the modern man.
+            Oversized fits, luxury fabrics, timeless design.
           </p>
           {/* Dot indicators */}
           <div className="flex gap-2 mt-8">
-            <span className="w-2 h-2 rounded-full bg-white" />
-            <span className="w-2 h-2 rounded-full bg-[var(--color-dark-700)]" />
-            <span className="w-2 h-2 rounded-full bg-[var(--color-dark-700)]" />
+            <span className="w-2 h-2 rounded-full bg-[var(--color-beige)]" />
+            <span className="w-2 h-2 rounded-full bg-[var(--color-charcoal)]" />
+            <span className="w-2 h-2 rounded-full bg-[var(--color-charcoal)]" />
           </div>
-          <p className="mt-10 text-xs text-[var(--color-dark-700)]">
-            © {new Date().getFullYear()} Aero Store. All rights reserved.
+          <p className="mt-10 text-[11px] text-[var(--color-dark-700)]">
+            © {new Date().getFullYear()} Aervyn. All rights reserved.
           </p>
         </div>
       </div>
@@ -45,14 +40,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         {/* Mobile: show logo at top */}
         <div className="lg:hidden p-6">
-          <Link href="/" aria-label="Go to Aero Store">
-            <Image
-              src="/IMG_7194.PNG"
-              alt="Aero"
-              width={72}
-              height={48}
-              className="object-contain"
-            />
+          <Link href="/" aria-label="Go to Aervyn">
+            <span className="text-lg font-semibold tracking-[0.15em] uppercase text-[var(--color-dark-900)]">
+              AERVYN
+            </span>
           </Link>
         </div>
 

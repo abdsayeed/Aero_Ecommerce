@@ -1,55 +1,55 @@
 "use client";
 
 import { useState } from "react";
-import { Search, MessageSquare, Phone, MapPin } from "lucide-react";
+import { Search, MessageSquare, Phone, MapPin, Mail } from "lucide-react";
 
 const quickAssists = [
   {
     category: "Returns & Exchanges",
     questions: [
-      "What is Aero's returns policy?",
-      "How do I return or exchange my Aero order?",
+      "What is Aervyn's returns policy?",
+      "How do I return or exchange my order?",
       "Where is my refund?",
     ],
   },
   {
-    category: "Dispatch & Delivery",
+    category: "Shipping & Delivery",
     questions: [
-      "What are Aero's delivery options?",
-      "How do I get free delivery on Aero orders?",
-      "Can I buy online and pick up at an Aero store?",
+      "What are the delivery options?",
+      "How do I get free delivery?",
+      "Can I track my Aervyn order?",
     ],
   },
   {
     category: "Orders & Payment",
     questions: [
-      "Where is my Aero order?",
-      "Can I cancel or change my Aero order?",
-      "What are Aero's payment options?",
+      "Where is my order?",
+      "Can I cancel or change my order?",
+      "What payment methods do you accept?",
     ],
   },
   {
-    category: "Shopping",
+    category: "Products & Sizing",
     questions: [
-      "How do I find the right size and fit?",
-      "Does Aero offer product advice?",
-      "How do I use an Aero promo code?",
+      "How do I find the right size?",
+      "What materials do you use?",
+      "How do I use a promo code?",
     ],
   },
   {
-    category: "Aero Membership & Apps",
+    category: "Aervyn Community",
     questions: [
-      "What is Aero Membership?",
-      "How do I get Aero's newest sneaker releases?",
-      "What are the birthday promo terms and conditions?",
+      "What is Aervyn Membership?",
+      "How do I get early access to drops?",
+      "Where can I find the latest lookbook?",
     ],
   },
   {
     category: "Company Info",
     questions: [
-      "Can I recycle my Aero shoes?",
-      "What is Aero's mission?",
-      "Where can I learn more about Aero, Inc.?",
+      "Is Aervyn sustainable?",
+      "What is Aervyn's mission?",
+      "Where is Aervyn based?",
     ],
   },
 ];
@@ -61,17 +61,20 @@ export default function ContactClient() {
     <div className="w-full">
 
       {/* ── Hero ── */}
-      <div className="flex flex-col items-center px-6 pt-20 pb-16 bg-[var(--color-light-100)]">
-        <h1 className="text-[56px] leading-[60px] font-bold text-[var(--color-dark-900)] tracking-tight mb-10 text-center">
-          GET HELP
+      <div className="flex flex-col items-center px-6 pt-24 pb-16 bg-[var(--color-light-100)]">
+        <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[var(--color-dark-500)] mb-4">
+          Support
+        </span>
+        <h1 className="text-4xl md:text-5xl font-semibold text-[var(--color-dark-900)] tracking-tight mb-10 text-center">
+          How Can We Help?
         </h1>
         <div className="relative w-full max-w-[560px]">
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="What can we help you with?"
-            className="w-full h-14 pl-6 pr-14 border border-[var(--color-light-400)] rounded-sm text-[length:var(--text-body)] text-[var(--color-dark-900)] placeholder:text-[var(--color-dark-500)] bg-[var(--color-light-100)] focus:outline-none focus:border-[var(--color-dark-900)] transition-colors"
+            placeholder="Search for help…"
+            className="w-full h-14 pl-6 pr-14 border border-[var(--color-light-300)] text-[14px] text-[var(--color-dark-900)] placeholder:text-[var(--color-dark-500)] bg-[var(--color-light-100)] focus:outline-none focus:border-[var(--color-dark-900)] transition-colors"
           />
           <button
             type="button"
@@ -87,21 +90,21 @@ export default function ContactClient() {
       <div className="max-w-5xl mx-auto px-6 sm:px-10 pt-14 pb-16">
 
         <div className="mb-10">
-          <h2 className="text-[28px] font-semibold text-[var(--color-dark-900)] mb-2">
+          <h2 className="text-2xl font-semibold text-[var(--color-dark-900)] mb-2 tracking-tight">
             Quick Assists
           </h2>
-          <p className="text-[length:var(--text-body)] text-[var(--color-dark-700)]">
+          <p className="text-[14px] text-[var(--color-dark-700)]">
             Answers to our most frequently asked questions are just one click away.
           </p>
         </div>
 
         <div className="border-t border-[var(--color-light-300)] mb-12" />
 
-        {/* 3-column grid — two rows of 3 */}
+        {/* 3-column grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-14">
           {quickAssists.map((section) => (
             <div key={section.category} className="flex flex-col">
-              <h3 className="text-[length:var(--text-body-medium)] font-semibold text-[var(--color-dark-900)] mb-4">
+              <h3 className="text-[14px] font-semibold text-[var(--color-dark-900)] mb-4">
                 {section.category}
               </h3>
               <ul className="flex flex-col gap-3 flex-1">
@@ -109,7 +112,7 @@ export default function ContactClient() {
                   <li key={q}>
                     <button
                       type="button"
-                      className="text-left text-[length:var(--text-caption)] text-[var(--color-dark-700)] hover:text-[var(--color-dark-900)] hover:underline underline-offset-2 transition-colors leading-snug"
+                      className="text-left text-[13px] text-[var(--color-dark-700)] hover:text-[var(--color-dark-900)] hover:underline underline-offset-2 transition-colors leading-snug"
                     >
                       {q}
                     </button>
@@ -118,7 +121,7 @@ export default function ContactClient() {
               </ul>
               <button
                 type="button"
-                className="mt-5 self-start text-[length:var(--text-caption)] font-medium text-[var(--color-dark-900)] underline underline-offset-2 hover:text-[var(--color-dark-700)] transition-colors"
+                className="mt-5 self-start text-[12px] font-medium tracking-wide uppercase text-[var(--color-dark-900)] underline underline-offset-2 hover:opacity-60 transition-opacity"
               >
                 View all
               </button>
@@ -131,7 +134,7 @@ export default function ContactClient() {
       <div className="max-w-5xl mx-auto px-6 sm:px-10 pt-6 pb-24">
 
         <div className="mb-6">
-          <h2 className="text-[28px] font-semibold text-[var(--color-dark-900)]">
+          <h2 className="text-2xl font-semibold text-[var(--color-dark-900)] tracking-tight">
             Contact Us
           </h2>
         </div>
@@ -142,73 +145,72 @@ export default function ContactClient() {
 
           {/* Chat with us */}
           <div className="flex flex-col gap-5">
-            <div className="w-14 h-14 border border-[var(--color-light-300)] flex items-center justify-center">
-              <MessageSquare className="w-7 h-7 text-[var(--color-dark-900)]" strokeWidth={1.25} />
+            <div className="w-12 h-12 border border-[var(--color-light-300)] flex items-center justify-center">
+              <MessageSquare className="w-6 h-6 text-[var(--color-dark-900)]" strokeWidth={1.25} />
             </div>
             <div>
-              <h3 className="text-[length:var(--text-body-medium)] font-semibold text-[var(--color-dark-900)] mb-2">
+              <h3 className="text-[14px] font-semibold text-[var(--color-dark-900)] mb-2">
                 Chat with us
               </h3>
-              <p className="text-[length:var(--text-caption)] text-[var(--color-dark-700)] leading-relaxed">
-                Chat with an Aero Expert for help with your order, products, and more.
+              <p className="text-[13px] text-[var(--color-dark-700)] leading-relaxed">
+                Chat with the Aervyn team for help with your order, sizing, and more.
               </p>
             </div>
-            <p className="text-[length:var(--text-footnote)] text-[var(--color-dark-500)] leading-relaxed">
-              Mon–Fri: 7am – 7pm<br />
-              Sat–Sun: 9am – 5pm
+            <p className="text-[11px] text-[var(--color-dark-500)] leading-relaxed">
+              Mon–Fri: 9am – 6pm<br />
+              Sat: 10am – 4pm
             </p>
             <button
               type="button"
-              className="self-start h-11 px-8 bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[length:var(--text-caption)] font-medium hover:bg-[var(--color-dark-700)] transition-colors focus:outline-none"
+              className="self-start h-10 px-6 bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[12px] font-medium tracking-wide uppercase hover:bg-[var(--color-charcoal)] transition-colors focus:outline-none"
             >
               Chat Now
             </button>
           </div>
 
-          {/* Call us */}
+          {/* Email us */}
           <div className="flex flex-col gap-5">
-            <div className="w-14 h-14 border border-[var(--color-light-300)] flex items-center justify-center">
-              <Phone className="w-7 h-7 text-[var(--color-dark-900)]" strokeWidth={1.25} />
+            <div className="w-12 h-12 border border-[var(--color-light-300)] flex items-center justify-center">
+              <Mail className="w-6 h-6 text-[var(--color-dark-900)]" strokeWidth={1.25} />
             </div>
             <div>
-              <h3 className="text-[length:var(--text-body-medium)] font-semibold text-[var(--color-dark-900)] mb-2">
-                Call us
+              <h3 className="text-[14px] font-semibold text-[var(--color-dark-900)] mb-2">
+                Email us
               </h3>
-              <p className="text-[length:var(--text-caption)] text-[var(--color-dark-700)] leading-relaxed">
-                Speak directly with an Aero Expert.
+              <p className="text-[13px] text-[var(--color-dark-700)] leading-relaxed">
+                Drop us an email and we&apos;ll get back to you within 24 hours.
               </p>
             </div>
-            <p className="text-[length:var(--text-footnote)] text-[var(--color-dark-500)] leading-relaxed">
-              Mon–Fri: 7am – 7pm<br />
-              Sat–Sun: 9am – 5pm
+            <p className="text-[11px] text-[var(--color-dark-500)] leading-relaxed">
+              support@aervyn.com
             </p>
             <a
-              href="tel:+18005551234"
-              className="self-start h-11 px-8 bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[length:var(--text-caption)] font-medium hover:bg-[var(--color-dark-700)] transition-colors focus:outline-none flex items-center"
+              href="mailto:support@aervyn.com"
+              className="self-start h-10 px-6 bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[12px] font-medium tracking-wide uppercase hover:bg-[var(--color-charcoal)] transition-colors focus:outline-none flex items-center"
             >
-              1-800-555-1234
+              Send Email
             </a>
           </div>
 
-          {/* Find a Store */}
+          {/* Visit us */}
           <div className="flex flex-col gap-5">
-            <div className="w-14 h-14 border border-[var(--color-light-300)] flex items-center justify-center">
-              <MapPin className="w-7 h-7 text-[var(--color-dark-900)]" strokeWidth={1.25} />
+            <div className="w-12 h-12 border border-[var(--color-light-300)] flex items-center justify-center">
+              <MapPin className="w-6 h-6 text-[var(--color-dark-900)]" strokeWidth={1.25} />
             </div>
             <div>
-              <h3 className="text-[length:var(--text-body-medium)] font-semibold text-[var(--color-dark-900)] mb-2">
-                Find a Store
+              <h3 className="text-[14px] font-semibold text-[var(--color-dark-900)] mb-2">
+                Visit us
               </h3>
-              <p className="text-[length:var(--text-caption)] text-[var(--color-dark-700)] leading-relaxed">
-                Visit an Aero store near you for in-person help and the latest products.
+              <p className="text-[13px] text-[var(--color-dark-700)] leading-relaxed">
+                Come see our latest collections in person at our London showroom.
               </p>
             </div>
             <div className="flex-1" />
             <button
               type="button"
-              className="self-start h-11 px-8 bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[length:var(--text-caption)] font-medium hover:bg-[var(--color-dark-700)] transition-colors focus:outline-none"
+              className="self-start h-10 px-6 bg-[var(--color-dark-900)] text-[var(--color-light-100)] text-[12px] font-medium tracking-wide uppercase hover:bg-[var(--color-charcoal)] transition-colors focus:outline-none"
             >
-              Find a Store
+              Get Directions
             </button>
           </div>
 
